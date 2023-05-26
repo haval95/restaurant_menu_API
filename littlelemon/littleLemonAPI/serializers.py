@@ -10,10 +10,15 @@ class CategorySerializer(serializers.ModelSerializer):
 class MenuItemSerializer(serializers.ModelSerializer):
     price_after_tax = serializers.SerializerMethodField(method_name= "calculate_tax")
     #category = serializers.StringRelatedField()
-    category = CategorySerializer()
+    category = CategorySerializer(read_only=True)
+    category_id = serializers.IntegerField(write_only=True)
     class Meta:
         model= Menu_Item
-        fields = ["item_name", "item_ingridiants", "item_price", "image", "category", "inventory", "price_after_tax"]
+        fields = ["item_name", "item_ingridiants", "item_price", "image", "category", "category_id", "inventory", "price_after_tax"]
+        extra_kwargs = {
+            'item_price': {'min_value': 0},
+            'inventory': {'min_value': 0}
+        }
         
 
     def calculate_tax(self, product:Menu_Item):
