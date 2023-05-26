@@ -4,6 +4,9 @@ from .serializers import CategorySerializer, MenuItemSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from .filters import  MenuItemFilter
+from django_filters import rest_framework as filters
+from django.core.paginator import Paginator, EmptyPage
 
 @api_view(["GET"])
 def menu_items_fn_view(request):
@@ -13,6 +16,8 @@ def menu_items_fn_view(request):
         to_price = request.query_params.get("to_price")
         search = request.query_params.get("search")
         ordering = request.query_params.get("ordering")
+        perpage = request.query_params.get("perpage", default=2)
+        page = request.query_params.get("page", default=1)
         if category_name:
             items = items.filter(category__category_name=category_name)
         if to_price:
@@ -23,6 +28,11 @@ def menu_items_fn_view(request):
             ordering_feilds = ordering.split(",")
             items = items.order_by(*ordering_feilds)
         
+        paginator = Paginator(items, per_page=perpage)
+        try:
+            items = paginator.page(number=page)
+        except EmptyPage:
+            items = []
         serialized_items = MenuItemSerializer(items, many=True)
         return Response(serialized_items.data)
     
@@ -50,6 +60,12 @@ class Menu_ItemView(generics.ListCreateAPIView):
 
         return queryset
 
+class Menu_Item_djfilters(generics.ListCreateAPIView):
+    queryset = Menu_Item.objects.select_related('category').all()
+    serializer_class = MenuItemSerializer
+    filterset_class = MenuItemFilter
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('category_name', 'item_price')
         
     
     
