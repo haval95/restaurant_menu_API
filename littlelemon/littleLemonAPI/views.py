@@ -63,9 +63,12 @@ class Menu_ItemView(generics.ListCreateAPIView):
 class Menu_Item_djfilters(generics.ListCreateAPIView):
     queryset = Menu_Item.objects.select_related('category').all()
     serializer_class = MenuItemSerializer
+    
     filterset_class = MenuItemFilter
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('category_name', 'item_price')
+    filterset_fields = ('category', 'item_price')
+    ordering_fields = ['item_price', 'inventory']
+    search_fields = ['item_name', "category__category_name"]
+    
         
     
     
