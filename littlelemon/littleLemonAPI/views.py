@@ -14,7 +14,7 @@ class SingleCategoryView(generics.RetrieveUpdateAPIView, generics.DestroyAPIView
 
 
 class Menu_ItemView(generics.ListCreateAPIView):
-    queryset = Menu_Item.objects.all()
+    queryset = Menu_Item.objects.select_related('category').all()
     serializer_class = MenuItemSerializer
     
     
