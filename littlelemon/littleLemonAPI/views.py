@@ -94,3 +94,12 @@ class SingleCategoryView(generics.RetrieveUpdateAPIView, generics.DestroyAPIView
 @permission_classes([IsAuthenticated])
 def secret(request):
     return Response({"message": "some secre msg"})
+
+
+@api_view()
+@permission_classes([IsAuthenticated])
+def manager_view(request):
+    if request.user.groups.filter(name="Manager").exists():
+        return Response({"message": "only manager sees this part"})
+    else:
+        return Response({"message": "you are not authorized"}, 403)
