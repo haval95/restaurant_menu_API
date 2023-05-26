@@ -7,6 +7,8 @@ from rest_framework import status
 from .filters import  MenuItemFilter
 from django_filters import rest_framework as filters
 from django.core.paginator import Paginator, EmptyPage
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 @api_view(["GET"])
 def menu_items_fn_view(request):
@@ -86,3 +88,9 @@ class CategoryView(generics.ListCreateAPIView):
 class SingleCategoryView(generics.RetrieveUpdateAPIView, generics.DestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    
+    
+@api_view()
+@permission_classes([IsAuthenticated])
+def secret(request):
+    return Response({"message": "some secre msg"})
