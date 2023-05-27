@@ -6,10 +6,13 @@ from rest_framework import status
 from .filters import  MenuItemFilter
 from django_filters import rest_framework as filters
 from django.core.paginator import Paginator, EmptyPage
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import permission_classes, throttle_classes, api_view
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from .throttles import TenCallsPerMinute
+from django.contrib.auth.models import User, Group
+from django.shortcuts import get_object_or_404
+
 
 @api_view(["GET"])
 def menu_items_fn_view(request):
@@ -117,3 +120,18 @@ def throttle_check(request):
 # @throttle_classes([TenCallsPerMinute])
 def user_throttle_check(request):
     return Response({"message": "user success"})
+
+
+@api_view(["POST", "DELETE"])
+@permission_classes([IsAdminUser])
+def manager(request):
+    username = request.data["username"]
+    if username:
+        user = get_object_or_404(User, username=username)
+        managers = Group.objects.get(name="Manager")
+        if request.method == "POST":
+            managers.user_set.add(user)
+        elif request.method == "DELETE":
+            managers.user_set.remove(user)
+        return Response({"msg": "ok"})
+    return Response({"msg": "error"}, status.HTTP_400_BAD_REQUEST)
