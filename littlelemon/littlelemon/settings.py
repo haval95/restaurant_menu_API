@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,7 +42,10 @@ INSTALLED_APPS = [
     "rest_framework",
     'django_filters',
     "rest_framework.authtoken",
-    "djoser"
+    "djoser",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -135,7 +139,10 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
     ], 
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework.authentication.SessionAuthentication",
         'rest_framework.authentication.TokenAuthentication',
+        
         ),
     'DEFAULT_THROTTLE_RATES': {
         'anon': '2/minute',
@@ -150,4 +157,8 @@ REST_FRAMEWORK = {
 DJOSER = {
     'USER_ID_FIELD': 'username',
     # "LOGIN_FIELD": "email"
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
 }
