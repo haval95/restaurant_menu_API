@@ -1,0 +1,8 @@
+[packages]
+django = "*"
+djangorestframework = "*"
+pillow = "*"
+djangorestframework-xml = "*"
+django-filter = "*"
+djoser = "*"
+djangorestframework-simplejwt = "*"
